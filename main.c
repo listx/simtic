@@ -118,7 +118,7 @@ void move_undo(struct board_pos *pos, int move);
 bool board_empty(struct board_pos *pos);
 /* UI helpers */
 void display_moves(struct move_list *mp);
-void display_board(struct board_pos pos);
+void display_board(struct board_pos *pos);
 
 int main()
 {
@@ -217,7 +217,7 @@ void newgame(bool human, int depth)
 			break;
 		}
 	}
-	display_board(pos);
+	display_board(&pos);
 	if (!checkmate(&pos))
 		printf("Draw!\n");
 }
@@ -230,7 +230,7 @@ void make_move(struct board_pos *pos, bool human, int depth)
 {
 	int move, sq, sq_tentative, best_sq;
 	if (human) {
-		display_board(*pos);
+		display_board(pos);
 choose_square:
 		printf("Enter square 0 - 8: ");
 		sq_tentative = getchar();
@@ -526,13 +526,13 @@ void display_moves(struct move_list *mp)
 	printf("\n");
 }
 
-void display_board(struct board_pos pos)
+void display_board(struct board_pos *pos)
 {
 	int i;
 	printf("\n+---+---+---+\n");
 	for (i = 0; i < SQUARES_MAX; i++) {
 		printf("| ");
-		switch (pos.sq[i]) {
+		switch (pos->sq[i]) {
 		case WHITE: printf("X"); break;
 		case BLACK: printf("O"); break;
 		case EMPTY: printf(" "); break;

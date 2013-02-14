@@ -266,8 +266,8 @@ choose_square:
 
 /*
  * Select the best possible move for the given position. First generate all
- * legal moves with move_generate, and get the score of each move. Play the move
- * with the best score for the current color.
+ * legal moves with move_generate(), and get the score of each move. Play the
+ * move with the best score for the current color.
  */
 int move_pick(struct board_pos *pos, int depth)
 {

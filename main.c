@@ -213,7 +213,7 @@ void newgame(bool human, int depth)
 
 		if (checkmate(&pos)) {
 			printf("%s wins!\n", (pos.color == WHITE) ? "Black (O)" : "White (X)");
-			printf("%s won the game!", human ? "CPU" : "You");
+			printf("%s won the game!", human ? "AI" : "You");
 			break;
 		}
 	}
@@ -255,9 +255,9 @@ choose_square:
 			goto choose_square;
 		}
 	} else {
-		printf("Deciding best move...\n");
+		printf("Deciding best move... ");
 		best_sq = move_pick(pos, depth);
-		printf("CPU chose square %d\n", best_sq);
+		printf("AI chose square %d\n", best_sq);
 		move = best_sq;
 	}
 
@@ -287,7 +287,7 @@ int move_pick(struct board_pos *pos, int depth)
 	 */
 	move_picked = mp->move[0];
 
-	printf("possible moves: ");
+	printf("Possible moves: ");
 	display_moves(mp);
 
 	/*

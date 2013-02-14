@@ -272,23 +272,21 @@ choose_square:
 int move_pick(struct board_pos *pos, int depth)
 {
 	struct move_list mlist;
-	struct move_list *mp;
 	int move_picked, score_current, score_of_candidate_move, i;
-	mp = &mlist;
 
 	nodecount = 0;
 
 	/* Generate all possible moves. */
-	move_generate(pos, mp);
+	move_generate(pos, &mlist);
 
 	/*
 	 * Pick default move, so that if we don't find a move that improves our
 	 * position, we can at least fall back to this move.
 	 */
-	move_picked = mp->move[0];
+	move_picked = mlist.move[0];
 
 	printf("Possible moves: ");
-	display_moves(mp);
+	display_moves(&mlist);
 
 	/*
 	 * Assume that the current position is very bad, and that we need to
@@ -299,18 +297,18 @@ int move_pick(struct board_pos *pos, int depth)
 	 */
 	score_current = (pos->color == WHITE) ? -INF : INF;
 
-	for (i = 0; i < mp->moves; i++) {
-		move_do(pos, mp->move[i]);
+	for (i = 0; i < mlist.moves; i++) {
+		move_do(pos, mlist.move[i]);
 		score_of_candidate_move = minimax(pos, depth);
-		move_undo(pos, mp->move[i]);
+		move_undo(pos, mlist.move[i]);
 		if (pos->color == WHITE) {
 			if (score_of_candidate_move > score_current) {
-				move_picked = mp->move[i];
+				move_picked = mlist.move[i];
 				score_current = score_of_candidate_move;
 			}
 		} else {
 			if (score_of_candidate_move < score_current) {
-				move_picked = mp->move[i];
+				move_picked = mlist.move[i];
 				score_current = score_of_candidate_move;
 			}
 		}

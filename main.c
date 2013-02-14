@@ -57,14 +57,19 @@ struct move_list {
 	 * A move is represented by the square that the X or O will fill in ---
 	 * the possible range is 0 - 8.
 	 *
-	 * E.g., move[] might look like this: {0, 3, 8, 5}, which means the
-	 * following:
-	 * X _ _ => X _ _ => X _ _ => X _ _
-	 * _ _ _    X _ _    X _ _    X _ X
-	 * _ _ _    _ _ _    _ _ X    _ _ X
+	 * Since tic-tac-toe is played by placing X or O on an empty square,
+	 * move[] just holds all of the available empty squares. This info is
+	 * used to generate a move tree for all possible, legal moves.
+	 *
+	 * The struct is called move_list because move[] will contain a list of
+	 * empty squares, each of which is a valid move. Hence, move_list.
 	 */
 	int move[MOVES_MAX];
-	int nodes; /* FIXME */
+	/*
+	 * Number of empty squares; this is just a sum of how many non-null
+	 * values are inside move[].
+	 */
+	int moves;
 };
 
 /*
@@ -294,7 +299,7 @@ int move_pick(struct board_pos *pos, int depth)
 	 */
 	score_current = (pos->color == WHITE) ? -INF : INF;
 
-	for (i = 0; i < mp->nodes; i++) {
+	for (i = 0; i < mp->moves; i++) {
 		move_do(pos, mp->move[i]);
 		score_of_candidate_move = minimax(pos, depth);
 		move_undo(pos, mp->move[i]);
@@ -440,7 +445,7 @@ int minimax(struct board_pos *pos, int depth)
 	 * with INF and tries to minimize it.
 	 */
 	score = (pos->color == WHITE) ? -INF : INF;
-	for (i = 0; i < mlist.nodes; i++) {
+	for (i = 0; i < mlist.moves; i++) {
 		move_do(pos, mlist.move[i]);
 		score_best = minimax(pos, depth - 1);
 		move_undo(pos, mlist.move[i]);
@@ -456,7 +461,8 @@ int minimax(struct board_pos *pos, int depth)
 /*
  * Generate all possible moves from the given position. This is tic-tac-toe, so
  * it's very simple: we just return all the squares that are empty; nodes is the
- * number of possible moves in this position (the total number of empty squares
+ * number of possible moves in this position (the total number of empty
+ * squares).
  */
 void move_generate(struct board_pos *pos, struct move_list *mp)
 {
@@ -465,13 +471,13 @@ void move_generate(struct board_pos *pos, struct move_list *mp)
 	for (i = 0; i < MOVES_MAX; i++) {
 		mp->move[i] = MOVE_NONE;
 	}
-	mp->nodes = 0;
+	mp->moves = 0;
 
 	/* Find all empty squares, and place the moves into mp. */
 	for (i = 0; i < SQUARES_MAX; i++) {
 		if (pos->sq[i] == EMPTY) {
-			mp->move[mp->nodes] = i;
-			mp->nodes++;
+			mp->move[mp->moves] = i;
+			mp->moves++;
 		}
 	}
 }
@@ -504,7 +510,7 @@ bool board_empty(struct board_pos *pos)
 void display_moves(struct move_list *mp)
 {
 	int i;
-	for (i = 0; i < mp->nodes; i++) {
+	for (i = 0; i < mp->moves; i++) {
 		switch (mp->move[i]) {
 		case 0: printf("0"); break;
 		case 1: printf("1"); break;
